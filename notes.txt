@@ -1,0 +1,41 @@
+# OpenAPI Scanner
+### Scenario 1: Auth Checking
+##### clear all other folders
+```sh
+rm -rf no-auth* user-auth*
+```
+##### generate curl scripts
+```sh
+/Users/ylin/cdp-project/curlgen/curlgenerator ./openapi31.json -o ./no-auth --bash --skip-validation --base-url http://localhost:8000
+/Users/ylin/cdp-project/curlgen/curlgenerator ./openapi31.json -o ./user-auth --bash --skip-validation --base-url http://localhost:8000 --authorization-header "Bearer "
+```
+##### fill parameters using local llm
+```sh
+./fill_param.py --arg "--proxy http://127.0.0.1:8081" --dir no-auth --dir user-auth
+```
+##### running the script
+```sh
+./run.sh no-auth user-auth --delay 0.2
+```
+
+### Scenario 2: Sending Payload
+##### clear all other folders
+```sh
+rm -rf no-auth*
+```
+##### generate curl scripts
+```sh
+/Users/ylin/cdp-project/curlgen/curlgenerator ./openapi31.json -o ./no-auth --bash --skip-validation --base-url http://localhost:8000
+```
+remove benchmark endpoints
+```sh
+rm ./no-auth/PostCreateItem.sh ./no-auth/GetSearchItems.sh
+```
+##### fill parameters using local llm
+```sh
+./fill_param.py --arg "--proxy http://127.0.0.1:8081" --dir no-auth -m idor,sqli
+```
+##### running the script
+```sh
+./run.sh no-auth --delay 0.2 --filter Delete
+```
